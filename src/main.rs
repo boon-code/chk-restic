@@ -1,7 +1,13 @@
 use std::{thread, time::Duration};
 use error_chain::error_chain;
 use walkdir::WalkDir;
-use rayon::prelude::*;
+use action::Action;
+
+mod action;
+mod walker;
+#[cfg(test)]
+mod tests;
+
 
 error_chain! {
     foreign_links {
@@ -16,26 +22,11 @@ fn slow(i: i32) -> i32 {
     i + 1
 }
 
-fn rayon_test() -> Option<String> {
-    /*
-    let a = WalkDir::new(".")
-        .into_par_iter()
-        .filter_map(|e| e.ok())
-        .map(|&e| e.path().to_str().unwrap_or("").len());
-    */
-    let a: Vec<i32> = (0..30)
-        .into_iter()
-        .into_par_iter()
-        .map(|i| slow(i))
-        .collect();
-    println!("{:?}", a);
+/*
     thread::sleep(Duration::from_millis(2000));
-    None
-}
+*/
 
 fn main() -> Result<()> {
-    let b = rayon_test();
-
     for entry in WalkDir::new(".")
             .follow_links(true)
             .into_iter()
@@ -55,4 +46,3 @@ fn main() -> Result<()> {
 
     Ok(())
 }
-
